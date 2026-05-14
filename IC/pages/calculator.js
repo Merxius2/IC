@@ -54,15 +54,16 @@ export default function CalculatorPage() {
 
   // State
   const [comparisonMode, setComparisonMode] = useState(false);
-  const [hasGasConnection, setHasGasConnection] = useState(true);
   const [electricity, setElectricity] = useState(String(DEFAULTS.electricity));
   const [gas, setGas] = useState(String(DEFAULTS.gas));
   const [connection, setConnection] = useState(String(DEFAULTS.connection));
   const [consumption, setConsumption] = useState(String(DEFAULTS.consumption));
   const [selectedHeatpump1Type, setSelectedHeatpump1Type] = useState('hybrid');
   const [selectedHeatpump1Index, setSelectedHeatpump1Index] = useState(0);
+  const [hasGasConnection1, setHasGasConnection1] = useState(true);
   const [selectedHeatpump2Type, setSelectedHeatpump2Type] = useState('electric');
   const [selectedHeatpump2Index, setSelectedHeatpump2Index] = useState(0);
+  const [hasGasConnection2, setHasGasConnection2] = useState(true);
 
   const elecNum = parseFloat(electricity) || 0;
   const gasNum = parseFloat(gas) || 0;
@@ -118,7 +119,7 @@ export default function CalculatorPage() {
 
   // Calculate minimum year range needed to cover break-even years
   const getMinimumYearRange = () => {
-    const calculateBreakEven = (heatpump, hpType) => {
+    const calculateBreakEven = (heatpump, hpType, hasGasConnection = true) => {
       if (!heatpump) return 0;
       const heatingViaHeatpump = hpType === 'hybrid' 
         ? (consNum * 10.7 * 0.7) 
@@ -127,13 +128,15 @@ export default function CalculatorPage() {
       const gasSavings = hpType === 'hybrid' 
         ? currentGasCost * 0.3 
         : currentGasCost;
-      const annualSavings = gasSavings - annualElecCost;
+      const connectionSavings = !hasGasConnection ? (connNum * 365) : 0;
+      const totalGasSavings = gasSavings + connectionSavings;
+      const annualSavings = totalGasSavings - annualElecCost;
       const netPrice = heatpump.price - heatpump.subsidy;
       return annualSavings > 0 ? Math.ceil(netPrice / annualSavings) : 25;
     };
     
-    const be1 = calculateBreakEven(hp1, hp1Type);
-    const be2 = comparisonMode ? calculateBreakEven(hp2, hp2Type) : 0;
+    const be1 = calculateBreakEven(hp1, hp1Type, hasGasConnection1);
+    const be2 = comparisonMode ? calculateBreakEven(hp2, hp2Type, hasGasConnection2) : 0;
     const maxBreakEven = Math.max(be1, be2);
     
     // Show at least break-even year + 5 years for recovery context, minimum 25
@@ -164,10 +167,10 @@ export default function CalculatorPage() {
       hp1: roi1[i]?.cumulative || 0,
       hp2: roi2[i]?.cumulative || 0,
     }));
-  }, [hp1, hp2, comparisonMode, hp1Type, hp2Type, elecNum, gasNum, connNum, consNum]);
+  }, [hp1, hp2, comparisonMode, hp1Type, hp2Type, elecNum, gasNum, connNum, consNum, hasGasConnection1, hasGasConnection2]);
 
   // Calculate statistics for display
-  const calculateStats = (heatpump, hpType = 'hybrid') => {
+  const calculateStats = (heatpump, hpType = 'hybrid', hasGasConnection = true) => {
     if (!heatpump) return null;
     
     const heatingViaHeatpump = hpType === 'hybrid' 
@@ -211,8 +214,8 @@ export default function CalculatorPage() {
     };
   };
 
-  const stats1 = calculateStats(hp1, hp1Type);
-  const stats2 = comparisonMode ? calculateStats(hp2, hp2Type) : null;
+  const stats1 = calculateStats(hp1, hp1Type, hasGasConnection1);
+  const stats2 = comparisonMode ? calculateStats(hp2, hp2Type, hasGasConnection2) : null;
 
   // Create break-even points for chart highlighting
   const breakEvenPoints = useMemo(() => {
@@ -332,6 +335,29 @@ export default function CalculatorPage() {
                 </div>
               </div>
             )}
+            
+            {/* Gas Connection Toggle - Only visible for electric heatpumps */}
+            {selectedHeatpump1Type === 'electric' && (
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{t('calculator.gasConnection')}</span>
+                  <button
+                    onClick={() => setHasGasConnection1(!hasGasConnection1)}
+                    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all ${
+                      hasGasConnection1
+                        ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
+                        : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform ${
+                        hasGasConnection1 ? 'translate-x-1' : 'translate-x-7'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {comparisonMode && (
@@ -384,35 +410,32 @@ export default function CalculatorPage() {
                   </div>
                 </div>
               )}
+              
+              {/* Gas Connection Toggle - Only visible for electric heatpumps */}
+              {selectedHeatpump2Type === 'electric' && (
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{t('calculator.gasConnection')}</span>
+                    <button
+                      onClick={() => setHasGasConnection2(!hasGasConnection2)}
+                      className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all ${
+                        hasGasConnection2
+                          ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
+                          : 'bg-gray-300 dark:bg-gray-600'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform ${
+                          hasGasConnection2 ? 'translate-x-1' : 'translate-x-7'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
-
-        {/* Gas Connection Toggle - Only visible for electric heatpumps */}
-        {(selectedHeatpump1Type === 'electric' || (comparisonMode && selectedHeatpump2Type === 'electric')) && (
-          <div className="card p-6 dark:bg-gray-800">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.gasConnection')}</h2>
-              <button
-                onClick={() => setHasGasConnection(!hasGasConnection)}
-                className={`relative inline-flex h-10 w-20 items-center rounded-full transition-all ${
-                  hasGasConnection
-                    ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
-                    : 'bg-gray-300 dark:bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-md transition-transform ${
-                    hasGasConnection ? 'translate-x-1' : 'translate-x-9'
-                  }`}
-                />
-                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-900">
-                  {hasGasConnection ? t('calculator.withConnection') : t('calculator.noConnection')}
-                </span>
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Stats Cards */}
         {stats1 && (
