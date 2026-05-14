@@ -3,7 +3,7 @@
  * Calculate ROI for hybrid and full electric heatpumps
  */
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Scatter, ScatterChart } from 'recharts';
 import { Zap } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -80,6 +80,23 @@ export default function CalculatorPage() {
   const [selectedHeatpump2Type, setSelectedHeatpump2Type] = useState(savedData.selectedHeatpump2Type);
   const [selectedHeatpump2Index, setSelectedHeatpump2Index] = useState(savedData.selectedHeatpump2Index);
   const [hasGasConnection2, setHasGasConnection2] = useState(savedData.hasGasConnection2);
+
+  // Sync local state with saved data when cookies load
+  useEffect(() => {
+    if (!isLoading) {
+      setComparisonMode(savedData.comparisonMode);
+      setElectricity(savedData.electricity);
+      setGas(savedData.gas);
+      setConnection(savedData.connection);
+      setConsumption(savedData.consumption);
+      setSelectedHeatpump1Type(savedData.selectedHeatpump1Type);
+      setSelectedHeatpump1Index(savedData.selectedHeatpump1Index);
+      setHasGasConnection1(savedData.hasGasConnection1);
+      setSelectedHeatpump2Type(savedData.selectedHeatpump2Type);
+      setSelectedHeatpump2Index(savedData.selectedHeatpump2Index);
+      setHasGasConnection2(savedData.hasGasConnection2);
+    }
+  }, [isLoading, savedData]);
 
   // Helper function to update both local state and cookie
   const updateCalculatorState = (field, value) => {
