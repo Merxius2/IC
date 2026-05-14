@@ -115,11 +115,36 @@ export default function CalculatorPage() {
     return data;
   };
 
+  // Calculate minimum year range needed to cover break-even years
+  const getMinimumYearRange = () => {
+    const calculateBreakEven = (heatpump, hpType) => {
+      if (!heatpump) return 0;
+      const heatingViaHeatpump = hpType === 'hybrid' 
+        ? (consNum * 10.7 * 0.7) 
+        : (consNum * 10.7);
+      const annualElecCost = (heatingViaHeatpump / heatpump.cop) * elecNum;
+      const gasSavings = hpType === 'hybrid' 
+        ? currentGasCost * 0.3 
+        : currentGasCost;
+      const annualSavings = gasSavings - annualElecCost;
+      const netPrice = heatpump.price - heatpump.subsidy;
+      return annualSavings > 0 ? Math.ceil(netPrice / annualSavings) : 25;
+    };
+    
+    const be1 = calculateBreakEven(hp1, hp1Type);
+    const be2 = comparisonMode ? calculateBreakEven(hp2, hp2Type) : 0;
+    const maxBreakEven = Math.max(be1, be2);
+    
+    // Show at least break-even year + 5 years for recovery context, minimum 25
+    return Math.max(maxBreakEven + 5, 25);
+  };
+
   // Generate chart data
   const chartData = useMemo(() => {
     if (!hp1) return [];
     
-    const roi1 = calculateROI(hp1, hp1Type);
+    const yearRange = getMinimumYearRange();
+    const roi1 = calculateROI(hp1, hp1Type, yearRange);
     
     if (!comparisonMode) {
       // For single mode, show cumulative ROI (includes investment cost)
@@ -130,7 +155,7 @@ export default function CalculatorPage() {
     }
     
     // For comparison, merge both heatpumps
-    const roi2 = calculateROI(hp2, hp2Type);
+    const roi2 = calculateROI(hp2, hp2Type, yearRange);
     const maxLen = Math.max(roi1.length, roi2.length);
     
     return Array.from({ length: maxLen }, (_, i) => ({
