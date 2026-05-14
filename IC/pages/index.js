@@ -44,7 +44,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Aap-FT</title>
+        <title>Aap-IC</title>
       </Head>
       <div className="min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100">
         {/* Gradient Background */}
@@ -81,7 +81,7 @@ export default function Home() {
           <div className="max-w-2xl text-center">
             {/* Logo */}
             <div className="mb-8 flex justify-center">
-              <Image src={getLanguageIcon(language)} alt="Aap-FT Logo" width={120} height={120} className="rounded-3xl shadow-lg" />
+              <Image src={getLanguageIcon(language)} alt="Aap-IC Logo" width={120} height={120} className="rounded-3xl shadow-lg" />
             </div>
             <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-6xl font-bold text-transparent md:text-7xl">
               {t('landing.title')}

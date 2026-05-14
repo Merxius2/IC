@@ -7,7 +7,7 @@ export default function Document() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#FFFFFF" />
-        <meta name="description" content="Aap-FT: Advanced Financial Tools" />
+        <meta name="description" content="Aap-IC: Investment Calculators" />
         
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
@@ -15,7 +15,7 @@ export default function Document() {
         {/* Apple specific tags for iOS */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="white" />
-        <meta name="apple-mobile-web-app-title" content="Aap-FT" />
+        <meta name="apple-mobile-web-app-title" content="Aap-IC" />
         <link rel="apple-touch-icon" href="/android-icon-192x192.png" />
         
         {/* Favicon */}

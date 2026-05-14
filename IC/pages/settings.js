@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Settings as SettingsIcon, Trash2, Globe, DollarSign, Moon, Sun, Receipt } from 'lucide-react';
+import { Settings as SettingsIcon, Trash2, Globe, DollarSign, Moon, Sun, Zap, Plus, Edit2, Save, X, ChevronDown } from 'lucide-react';
 import { deleteCookie } from '../lib/cookieStorage';
 import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
@@ -12,7 +12,6 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useSecretSettings } from '../context/SecretSettingsContext';
 import { useSidebar } from '../context/SidebarContext';
-import { useTax } from '../context/TaxContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import PageHeader from '../components/PageHeader';
 import Image from 'next/image';
@@ -49,8 +48,92 @@ export default function SettingsPage() {
   const { isDarkMode, toggleDarkMode, isAutoMode, toggleAutoMode } = useDarkMode();
   const { openSecretSettings } = useSecretSettings();
   const { toggleSidebar } = useSidebar();
-  const { selectedYear, changeYear, TAX_BRACKETS, isEstimatedYear } = useTax();
   const isMobile = useIsMobile();
+
+  // Default heatpumps function
+  const getDefaultHeatpumps = () => ({
+    hybrid: [
+      { id: 'h1', brand: 'Quatt', model: 'Hybrid 4 kW', price: 3600, subsidy: 2400, cop: 4.8 },
+      { id: 'h2', brand: 'Atlantic', model: 'Aurea 5 kW', price: 4400, subsidy: 2550, cop: 4.5 },
+      { id: 'h3', brand: 'Remeha', model: 'Elga Ace 4 kW', price: 4500, subsidy: 2400, cop: 4.5 },
+      { id: 'h4', brand: 'Nefit Bosch', model: 'Compress 3400i AWS 4 kW', price: 4700, subsidy: 2400, cop: 4.5 },
+      { id: 'h5', brand: 'Intergas', model: 'Xtend 5 kW', price: 4800, subsidy: 2400, cop: 4.7 },
+      { id: 'h6', brand: 'Itho Daalderop', model: 'HP-S 54 5 kW', price: 4900, subsidy: 2550, cop: 4.6 },
+      { id: 'h7', brand: 'Daikin', model: 'Altherma 3 H 4 kW', price: 5000, subsidy: 2400, cop: 4.6 },
+      { id: 'h8', brand: 'Panasonic', model: 'Aquarea 5 kW', price: 5000, subsidy: 2550, cop: 4.9 },
+      { id: 'h9', brand: 'Mitsubishi Electric', model: 'Ecodan 4 kW', price: 5100, subsidy: 2400, cop: 4.7 },
+      { id: 'h10', brand: 'Vaillant', model: 'aroTHERM plus 5 kW', price: 5200, subsidy: 2550, cop: 4.8 },
+    ],
+    electric: [
+      { id: 'e1', brand: 'Remeha', model: 'Mercuria 8 kW', price: 9500, subsidy: 3150, cop: 4.6 },
+      { id: 'e2', brand: 'Itho Daalderop', model: 'Amber 6.5 kW', price: 9800, subsidy: 2925, cop: 5.0 },
+      { id: 'e3', brand: 'Panasonic', model: 'Aquarea K-serie 7 kW', price: 10200, subsidy: 3000, cop: 5.1 },
+      { id: 'e4', brand: 'Vaillant', model: 'aroTHERM plus 7 kW', price: 10500, subsidy: 3000, cop: 4.9 },
+      { id: 'e5', brand: 'Mitsubishi Electric', model: 'Ecodan 8 kW', price: 10800, subsidy: 3150, cop: 4.7 },
+      { id: 'e6', brand: 'Daikin', model: 'Altherma 3 R 8 kW', price: 11000, subsidy: 3150, cop: 4.8 },
+      { id: 'e7', brand: 'Nefit Bosch', model: 'Compress 7400i 7 kW', price: 11500, subsidy: 3000, cop: 4.9 },
+      { id: 'e8', brand: 'Alpha Innotec', model: 'Alira 7 kW', price: 12000, subsidy: 3000, cop: 4.8 },
+      { id: 'e9', brand: 'NIBE', model: 'S2125 8 kW', price: 12500, subsidy: 3150, cop: 5.2 },
+      { id: 'e10', brand: 'Viessmann', model: 'Vitocal 250-A 8 kW', price: 13000, subsidy: 3150, cop: 5.1 },
+    ],
+  });
+
+  // Heatpump management state
+  const [heatpumps, setHeatpumpsState] = useState(() => getDefaultHeatpumps());
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState(null);
+  const [newHeatpump, setNewHeatpump] = useState({ type: 'hybrid', brand: '', model: '', price: '', subsidy: '', cop: '' });
+  const [expandedType, setExpandedType] = useState('hybrid');
+
+  // Save heatpumps
+  const saveHeatpumps = (updated) => {
+    setHeatpumpsState(updated);
+  };
+
+  // Edit handlers
+  const handleEdit = (type, id, hp) => {
+    setEditingId(`${type}-${id}`);
+    setEditForm({ ...hp, type });
+  };
+
+  const handleSaveEdit = () => {
+    if (editForm) {
+      const updated = { ...heatpumps };
+      const idx = updated[editForm.type].findIndex(h => h.id === editForm.id);
+      if (idx >= 0) {
+        updated[editForm.type][idx] = editForm;
+        saveHeatpumps(updated);
+      }
+      setEditingId(null);
+      setEditForm(null);
+    }
+  };
+
+  // Delete handler
+  const handleDelete = (type, id) => {
+    const updated = { ...heatpumps };
+    updated[type] = updated[type].filter(h => h.id !== id);
+    saveHeatpumps(updated);
+  };
+
+  // Add new heatpump
+  const handleAddHeatpump = () => {
+    if (newHeatpump.brand && newHeatpump.model && newHeatpump.price && newHeatpump.subsidy && newHeatpump.cop) {
+      const updated = { ...heatpumps };
+      const type = newHeatpump.type;
+      const newId = updated[type].length + 1;
+      updated[type].push({
+        id: `${type.charAt(0)}${newId}`,
+        brand: newHeatpump.brand,
+        model: newHeatpump.model,
+        price: parseInt(newHeatpump.price),
+        subsidy: parseInt(newHeatpump.subsidy),
+        cop: parseFloat(newHeatpump.cop),
+      });
+      saveHeatpumps(updated);
+      setNewHeatpump({ type: 'hybrid', brand: '', model: '', price: '', subsidy: '', cop: '' });
+    }
+  };
 
   const handleResetData = () => {
     setShowConfirmation(true);
@@ -205,72 +288,110 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Tax Settings Section */}
+        {/* Heatpump Management Section */}
         <div className="card p-8">
           <div className="flex items-center gap-3 mb-6">
-            <Receipt size={28} className="text-brand-primary" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Tax Calculator Settings</h2>
+            <Zap size={28} className="text-brand-primary" />
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Heatpump Management</h2>
           </div>
 
-          <div className="space-y-6">
-            {/* Year Selection */}
+          <div className="space-y-8">
+            {/* Hybrid Heatpumps - Collapsible */}
             <div>
-              <label htmlFor="taxYear" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                {t('tax.year')}
-              </label>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {['2024', '2025', '2026'].map((year) => (
-                  <button
-                    key={year}
-                    onClick={() => changeYear(year)}
-                    className={`px-4 py-3 rounded-lg font-medium transition-all ${
-                      selectedYear === year
-                        ? 'bg-brand-primary text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100'
-                    }`}
-                  >
-                    {year}
-                    {year === '2026' && (
-                      <span className="block text-xs font-normal mt-1 opacity-75">{t('tax.estimated')}</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-              {isEstimatedYear() && (
-                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                    ⚠️ {t('tax.brackets2026Warning')}
-                  </p>
+              <button
+                onClick={() => setExpandedType(expandedType === 'hybrid' ? null : 'hybrid')}
+                className="w-full flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Hybrid Heatpumps ({heatpumps.hybrid.length})</span>
+                <ChevronDown size={20} className={`text-gray-600 dark:text-gray-300 transition-transform ${expandedType === 'hybrid' ? 'rotate-180' : ''}`} />
+              </button>
+              {expandedType === 'hybrid' && (
+                <div className="space-y-2 mt-3">
+                  {heatpumps.hybrid.map((hp) => (
+                    <div key={hp.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                      {editingId === `hybrid-${hp.id}` ? (
+                        <div className="flex-1 flex gap-2">
+                          <input type="text" placeholder="Brand" value={editForm.brand} onChange={(e) => setEditForm({...editForm, brand: e.target.value})} className="flex-1 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <input type="text" placeholder="Model" value={editForm.model} onChange={(e) => setEditForm({...editForm, model: e.target.value})} className="flex-1 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <input type="number" placeholder="Price" value={editForm.price} onChange={(e) => setEditForm({...editForm, price: e.target.value})} className="w-24 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <input type="number" placeholder="Subsidy" value={editForm.subsidy} onChange={(e) => setEditForm({...editForm, subsidy: e.target.value})} className="w-24 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <input type="number" placeholder="COP" value={editForm.cop} onChange={(e) => setEditForm({...editForm, cop: e.target.value})} className="w-20 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <button onClick={handleSaveEdit} className="p-1 hover:bg-green-500 rounded"><Save size={18} className="text-green-600" /></button>
+                          <button onClick={() => setEditingId(null)} className="p-1 hover:bg-red-500 rounded"><X size={18} className="text-red-600" /></button>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="text-sm text-gray-900 dark:text-gray-100">{hp.brand} {hp.model} (€{hp.price - hp.subsidy} | COP: {hp.cop})</span>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEdit('hybrid', hp.id, hp)} className="p-1 hover:bg-blue-500 rounded"><Edit2 size={16} className="text-blue-600" /></button>
+                            <button onClick={() => handleDelete('hybrid', hp.id)} className="p-1 hover:bg-red-500 rounded"><Trash2 size={16} className="text-red-600" /></button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Tax Brackets Display */}
+            {/* Electric Heatpumps - Collapsible */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Tax Brackets for {selectedYear}</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-700">
-                      <th className="text-left px-4 py-2 font-medium text-gray-700 dark:text-gray-300">Income Range</th>
-                      <th className="text-right px-4 py-2 font-medium text-gray-700 dark:text-gray-300">Tax Rate</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {TAX_BRACKETS[selectedYear]?.map((bracket, idx) => (
-                      <tr key={idx} className="border-b border-gray-100 dark:border-gray-700">
-                        <td className="px-4 py-2 text-gray-900 dark:text-gray-100">
-                          €{bracket.min.toLocaleString('en-US')} - {bracket.max === Infinity ? '∞' : `€${bracket.max.toLocaleString('en-US')}`}
-                        </td>
-                        <td className="text-right px-4 py-2 text-gray-900 dark:text-gray-100">{bracket.label}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <button
+                onClick={() => setExpandedType(expandedType === 'electric' ? null : 'electric')}
+                className="w-full flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Electric Heatpumps ({heatpumps.electric.length})</span>
+                <ChevronDown size={20} className={`text-gray-600 dark:text-gray-300 transition-transform ${expandedType === 'electric' ? 'rotate-180' : ''}`} />
+              </button>
+              {expandedType === 'electric' && (
+                <div className="space-y-2 mt-3">
+                  {heatpumps.electric.map((hp) => (
+                    <div key={hp.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                      {editingId === `electric-${hp.id}` ? (
+                        <div className="flex-1 flex gap-2">
+                          <input type="text" placeholder="Brand" value={editForm.brand} onChange={(e) => setEditForm({...editForm, brand: e.target.value})} className="flex-1 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <input type="text" placeholder="Model" value={editForm.model} onChange={(e) => setEditForm({...editForm, model: e.target.value})} className="flex-1 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <input type="number" placeholder="Price" value={editForm.price} onChange={(e) => setEditForm({...editForm, price: e.target.value})} className="w-24 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <input type="number" placeholder="Subsidy" value={editForm.subsidy} onChange={(e) => setEditForm({...editForm, subsidy: e.target.value})} className="w-24 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <input type="number" placeholder="COP" value={editForm.cop} onChange={(e) => setEditForm({...editForm, cop: e.target.value})} className="w-20 px-2 py-1 rounded bg-white dark:bg-gray-600 text-gray-900 dark:text-white" />
+                          <button onClick={handleSaveEdit} className="p-1 hover:bg-green-500 rounded"><Save size={18} className="text-green-600" /></button>
+                          <button onClick={() => setEditingId(null)} className="p-1 hover:bg-red-500 rounded"><X size={18} className="text-red-600" /></button>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="text-sm text-gray-900 dark:text-gray-100">{hp.brand} {hp.model} (€{hp.price - hp.subsidy} | COP: {hp.cop})</span>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEdit('electric', hp.id, hp)} className="p-1 hover:bg-blue-500 rounded"><Edit2 size={16} className="text-blue-600" /></button>
+                            <button onClick={() => handleDelete('electric', hp.id)} className="p-1 hover:bg-red-500 rounded"><Trash2 size={16} className="text-red-600" /></button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Add New Heatpump */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Add New Heatpump</h3>
+              <div className="flex flex-col gap-3">
+                <select value={newHeatpump.type} onChange={(e) => setNewHeatpump({...newHeatpump, type: e.target.value})} className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                  <option value="hybrid">Hybrid</option>
+                  <option value="electric">Electric</option>
+                </select>
+                <input type="text" placeholder="Brand" value={newHeatpump.brand} onChange={(e) => setNewHeatpump({...newHeatpump, brand: e.target.value})} className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                <input type="text" placeholder="Model" value={newHeatpump.model} onChange={(e) => setNewHeatpump({...newHeatpump, model: e.target.value})} className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                <div className="flex gap-2">
+                  <input type="number" placeholder="Price (€)" value={newHeatpump.price} onChange={(e) => setNewHeatpump({...newHeatpump, price: e.target.value})} className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                  <input type="number" placeholder="Subsidy (€)" value={newHeatpump.subsidy} onChange={(e) => setNewHeatpump({...newHeatpump, subsidy: e.target.value})} className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                  <input type="number" placeholder="COP" value={newHeatpump.cop} onChange={(e) => setNewHeatpump({...newHeatpump, cop: e.target.value})} className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                </div>
+                <button onClick={handleAddHeatpump} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-lg hover:shadow-lg transition-all">
+                  <Plus size={20} />
+                  Add Heatpump
+                </button>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-                Note: To modify tax brackets, please contact support. Current brackets are based on official Belastingdienst rates.
-              </p>
             </div>
           </div>
         </div>
@@ -343,7 +464,7 @@ export default function SettingsPage() {
         >
           <Image
             src={`/icon-${ICON_MAP[language]}-192.png`}
-            alt="Aap-FT"
+            alt="Aap-IC"
             width={120}
             height={120}
             className="rounded-xl"

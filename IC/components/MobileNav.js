@@ -17,8 +17,8 @@ export default function MobileNav() {
 
   // Navigation items for heatpump calculator
   const navItems = [
-    { path: '/', icon: Home, labelKey: 'navigation.home' },
-    { path: '/calculator', icon: Zap, labelKey: 'navigation.calculator', isPrimary: true },
+    { path: '/calculator', icon: Zap, labelKey: 'navigation.calculator' },
+    { path: '/', icon: Home, labelKey: 'navigation.home', isPrimary: true },
     { path: '/settings', icon: Settings, labelKey: 'navigation.settings' },
   ];
 

@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { Home, Zap, Settings, X } from 'lucide-react';
+import { Zap, Settings, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSecretSettings } from '../context/SecretSettingsContext';
 import { useSidebar } from '../context/SidebarContext';
@@ -61,7 +61,6 @@ export default function Sidebar() {
   };
 
   const navItems = [
-    { path: '/', labelKey: 'navigation.home', icon: Home },
     { path: '/calculator', labelKey: 'navigation.calculator', icon: Zap },
   ];
 
@@ -98,7 +97,7 @@ export default function Sidebar() {
             <Image src={getLanguageIcon(language)} alt="Audit Logo" width={80} height={80} className="rounded-lg" />
           </button>
           <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-3xl font-bold text-transparent text-center">
-            Aap-FT
+            Aap-IC
           </h1>
         </div>
         {/* Close button for mobile/tablet */}

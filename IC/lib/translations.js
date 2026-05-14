@@ -1,9 +1,9 @@
 const translations = {
   en: {
     landing: {
-      title: 'Heatpump ROI',
-      subtitle: 'Energy Savings Tool',
-      description: 'Calculate your return on investment for hybrid and electric heatpumps',
+      title: 'Aap-IC',
+      subtitle: 'investment calculators',
+      description: 'Powerful financial calculators to analyze your investments and plan your future',
       heatpumpTitle: 'Heatpump ROI Calculator',
       heatpumpDesc: 'Analyze the financial benefits of switching to a heatpump. Compare hybrid and full electric options, see your annual savings, and calculate your break-even period.',
       cta: 'Start Calculating',
@@ -253,9 +253,9 @@ const translations = {
   },
   nl: {
     landing: {
-      title: 'Warmtepomp ROI',
-      subtitle: 'Energiebespaaringshulpmiddel',
-      description: 'Bereken uw rendement op investering voor hybride en elektrische warmtepompen',
+      title: 'Aap-IC',
+      subtitle: 'beleggingscalculators',
+      description: 'Krachtige financiële calculators om uw investeringen te analyseren en uw toekomst te plannen',
       heatpumpTitle: 'Warmtepomp ROI Rekenmachine',
       heatpumpDesc: 'Analyseer de financiële voordelen van overstap naar een warmtepomp. Vergelijk hybride en volledig elektrische opties, bekijk uw jaarlijkse besparing en bereken uw break-even periode.',
       cta: 'Begin met berekenen',
@@ -505,9 +505,9 @@ const translations = {
   },
   ru: {
     landing: {
-      title: 'Окупаемость теплового насоса',
-      subtitle: 'Инструмент экономии энергии',
-      description: 'Рассчитайте рентабельность инвестиций в гибридные и электрические тепловые насосы',
+      title: 'Aap-IC',
+      subtitle: 'Инвестиционные калькуляторы',
+      description: 'Мощные финансовые калькуляторы для анализа ваших инвестиций и планирования вашего будущего',
       heatpumpTitle: 'Калькулятор окупаемости теплового насоса',
       heatpumpDesc: 'Анализируйте финансовые выгоды перехода на тепловой насос. Сравнивайте гибридные и полностью электрические варианты, просмотрите годовую экономию и рассчитайте период окупаемости.',
       cta: 'Начать расчет',
@@ -757,9 +757,9 @@ const translations = {
   },
   tr: {
     landing: {
-      title: 'Isı Pompası ROI',
-      subtitle: 'Enerji Tasarrufu Aracı',
-      description: 'Hibrit ve elektrik ısı pompaları için yatırım getirisini hesaplayın',
+      title: 'Aap-IC',
+      subtitle: 'Yatırım Hesaplayıcıları',
+      description: 'Yatırımlarınızı analiz etmek ve geleceğinizi planlamak için güçlü finansal hesaplayıcılar',
       heatpumpTitle: 'Isı Pompası ROI Hesaplayıcısı',
       heatpumpDesc: 'Isı pompasına geçiş yapmak için finansal faydaları analiz edin. Hibrit ve tamamen elektrik seçeneklerini karşılaştırın, yıllık tasarrufunuzu görün ve başabaş dönemini hesaplayın.',
       cta: 'Hesaplamaya Başla',

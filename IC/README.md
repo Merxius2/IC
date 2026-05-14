@@ -1,4 +1,4 @@
-# Aap-FT: Advanced Financial Tools
+# Aap-IC: Investment Calculators
 
 A modern, responsive financial analysis and planning web app built with Next.js, Tailwind CSS, and Recharts.
 
