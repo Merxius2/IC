@@ -1,7 +1,7 @@
 {
-  "name": "Heatpump ROI Calculator",
-  "short_name": "Heatpump ROI",
-  "description": "Calculate return on investment for hybrid and electric heatpumps",
+  "name": "Aap-IC: Investment Calculators",
+  "short_name": "Aap-IC",
+  "description": "Powerful financial calculators to analyze your investments and plan your future",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -1,6 +1,6 @@
 /**
- * Heatpump ROI Calculator Page
- * Calculate ROI for hybrid and full electric heatpumps
+ * Aap-IC Calculator Page
+ * Analyze financial returns on various investments
  */
 
 import { useMemo, useState, useEffect } from 'react';
