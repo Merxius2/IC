@@ -4,7 +4,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Scatter, ScatterChart } from 'recharts';
 import { Zap } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
@@ -186,6 +186,18 @@ export default function CalculatorPage() {
 
   const stats1 = calculateStats(hp1, hp1Type);
   const stats2 = comparisonMode ? calculateStats(hp2, hp2Type) : null;
+
+  // Create break-even points for chart highlighting
+  const breakEvenPoints = useMemo(() => {
+    const points = [];
+    if (stats1) {
+      points.push({ year: stats1.breakEvenYear, value: 0, type: 'hp1' });
+    }
+    if (stats2 && comparisonMode) {
+      points.push({ year: stats2.breakEvenYear, value: 0, type: 'hp2' });
+    }
+    return points;
+  }, [stats1, stats2, comparisonMode]);
 
   return (
     <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0 dark:bg-gray-900">
@@ -485,31 +497,6 @@ export default function CalculatorPage() {
                   stroke={isDarkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"} 
                   strokeDasharray="5,5"
                 />
-                {comparisonMode ? (
-                  <>
-                    <ReferenceLine 
-                      x={stats1.breakEvenYear} 
-                      stroke="#3B82F6"
-                      strokeWidth={2}
-                      label={{ value: `Break-even: ${stats1.breakEvenYear}y`, position: 'top', fill: '#3B82F6', fontSize: 12 }}
-                    />
-                    {stats2 && (
-                      <ReferenceLine 
-                        x={stats2.breakEvenYear} 
-                        stroke="#8B5CF6"
-                        strokeWidth={2}
-                        label={{ value: `Break-even: ${stats2.breakEvenYear}y`, position: 'bottom', fill: '#8B5CF6', fontSize: 12 }}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <ReferenceLine 
-                    x={stats1.breakEvenYear} 
-                    stroke="#10B981"
-                    strokeWidth={2}
-                    label={{ value: `✓ Break-even: ${stats1.breakEvenYear} years`, position: 'topLeft', fill: isDarkMode ? '#10B981' : '#059669', fontSize: 12, offset: 10 }}
-                  />
-                )}
                 <Tooltip
                   contentStyle={{
                     backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.8)' : 'rgba(255, 255, 255, 0.8)',
@@ -519,6 +506,7 @@ export default function CalculatorPage() {
                   }}
                   formatter={(value) => `€${value.toFixed(0)}`}
                 />
+                {/* Area curves */}
                 {comparisonMode ? (
                   <>
                     <Area
@@ -547,6 +535,17 @@ export default function CalculatorPage() {
                     fill="url(#colorSavings1)"
                   />
                 )}
+                {/* Break-even points as circles */}
+                {breakEvenPoints.map((point, idx) => (
+                  <Scatter
+                    key={idx}
+                    data={[point]}
+                    dataKey="value"
+                    fill="#FBBF24"
+                    shape="circle"
+                    isAnimationActive={false}
+                  />
+                ))}
               </AreaChart>
             </ResponsiveContainer>
           </div>
