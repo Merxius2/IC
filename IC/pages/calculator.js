@@ -337,7 +337,7 @@ export default function CalculatorPage() {
               {t('calculator.single')}
             </button>
             <button
-              onClick={() => updateCalculatorState('comparisonMode', true)}}
+              onClick={() => updateCalculatorState('comparisonMode', true)}
               className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
                 comparisonMode
                   ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
