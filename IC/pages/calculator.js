@@ -254,31 +254,7 @@ export default function CalculatorPage() {
           ))}
         </div>
 
-        {/* Gas Connection Toggle */}
-        <div className="card p-6 dark:bg-gray-800">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.gasConnection')}</h2>
-            <button
-              onClick={() => setHasGasConnection(!hasGasConnection)}
-              className={`relative inline-flex h-10 w-20 items-center rounded-full transition-all ${
-                hasGasConnection
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
-                  : 'bg-gray-300 dark:bg-gray-600'
-              }`}
-            >
-              <span
-                className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-md transition-transform ${
-                  hasGasConnection ? 'translate-x-1' : 'translate-x-9'
-                }`}
-              />
-              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-900">
-                {hasGasConnection ? t('calculator.withConnection') : t('calculator.noConnection')}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* Comparison Toggle */}
+        {/* Comparison Toggle */
         <div className="card p-6 dark:bg-gray-800">
           <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.view')}</h2>
           <div className="flex gap-4">
@@ -411,6 +387,32 @@ export default function CalculatorPage() {
             </div>
           )}
         </div>
+
+        {/* Gas Connection Toggle - Only visible for electric heatpumps */}
+        {(selectedHeatpump1Type === 'electric' || (comparisonMode && selectedHeatpump2Type === 'electric')) && (
+          <div className="card p-6 dark:bg-gray-800">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.gasConnection')}</h2>
+              <button
+                onClick={() => setHasGasConnection(!hasGasConnection)}
+                className={`relative inline-flex h-10 w-20 items-center rounded-full transition-all ${
+                  hasGasConnection
+                    ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
+                    : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-md transition-transform ${
+                    hasGasConnection ? 'translate-x-1' : 'translate-x-9'
+                  }`}
+                />
+                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-900">
+                  {hasGasConnection ? t('calculator.withConnection') : t('calculator.noConnection')}
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Stats Cards */}
         {stats1 && (
