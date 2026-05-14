@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Eye, Settings, X, CreditCard, Receipt } from 'lucide-react';
+import { Home, Zap, Settings, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSecretSettings } from '../context/SecretSettingsContext';
 import { useSidebar } from '../context/SidebarContext';
@@ -60,22 +60,9 @@ export default function Sidebar() {
     return iconMap[lang] || '/icon-e-192.png';
   };
 
-  const navSections = [
-    {
-      titleKey: 'navigation.financialAudit',
-      items: [
-        { path: '/overview', labelKey: 'navigation.overview', icon: Eye },
-        { path: '/dashboard', labelKey: 'navigation.householdBudget', icon: BarChart3 },
-        { path: '/retirement', labelKey: 'navigation.retirement', icon: TrendingUp },
-      ],
-    },
-    {
-      titleKey: 'navigation.otherTools',
-      items: [
-        { path: '/debt', labelKey: 'navigation.debtCalculator', icon: CreditCard },
-        { path: '/tax', labelKey: 'navigation.taxCalculator', icon: Receipt },
-      ],
-    },
+  const navItems = [
+    { path: '/', labelKey: 'navigation.home', icon: Home },
+    { path: '/calculator', labelKey: 'navigation.calculator', icon: Zap },
   ];
 
   const settingsItem = { path: '/settings', labelKey: 'navigation.settings', icon: Settings };
@@ -127,33 +114,24 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-6">
-        {navSections.map((section) => (
-          <div key={section.title}>
-            <h3 className="px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-              {t(section.titleKey)}
-            </h3>
-            <div className="space-y-2">
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link key={item.path} href={item.path}>
-                    <div
-                      className={`flex items-center space-x-3 rounded-lg px-4 py-3 font-medium transition-all ${
-                        isActive(item.path)
-                          ? 'bg-gray-100 text-brand-primary'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Icon size={20} />
-                      <span>{t(item.labelKey)}</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+      <nav className="flex-1 space-y-2">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link key={item.path} href={item.path}>
+              <div
+                className={`flex items-center space-x-3 rounded-lg px-4 py-3 font-medium transition-all ${
+                  isActive(item.path)
+                    ? 'bg-gray-100 text-brand-primary dark:bg-gray-800 dark:text-brand-secondary'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                }`}
+              >
+                <Icon size={20} />
+                <span>{t(item.labelKey)}</span>
+              </div>
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Settings at bottom */}
