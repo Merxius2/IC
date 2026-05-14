@@ -53,7 +53,6 @@ export default function CalculatorPage() {
   const isMobile = useIsMobile();
 
   // State
-  const [mode, setMode] = useState('hybrid');
   const [comparisonMode, setComparisonMode] = useState(false);
   const [electricity, setElectricity] = useState(String(DEFAULTS.electricity));
   const [gas, setGas] = useState(String(DEFAULTS.gas));
@@ -73,9 +72,9 @@ export default function CalculatorPage() {
   const currentGasCost = (gasNum * consNum) + (connNum * 365);
   const gasCostPerKwh = gasNum * 0.0107; // 1 m³ gas ≈ 10.7 kWh equivalent
 
-  // Get heatpump data - in comparison mode, can be different types
-  const hp1Type = comparisonMode ? selectedHeatpump1Type : 'hybrid';
-  const hp2Type = comparisonMode ? selectedHeatpump2Type : 'electric';
+  // Get heatpump data - always use selected types
+  const hp1Type = selectedHeatpump1Type;
+  const hp2Type = selectedHeatpump2Type;
   
   const hp1 = HEATPUMPS[hp1Type][selectedHeatpump1Index];
   const hp2 = comparisonMode ? HEATPUMPS[hp2Type][selectedHeatpump2Index] : null;
@@ -189,33 +188,6 @@ export default function CalculatorPage() {
       <PageHeader icon={Zap} titleKey="calculator.title" />
 
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
-        {/* Mode Toggle */}
-        <div className="card p-6 dark:bg-gray-800">
-          <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.heatpumpType')}</h2>
-          <div className="flex gap-4">
-            <button
-              onClick={() => setMode('hybrid')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                mode === 'hybrid'
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('calculator.hybrid')}
-            </button>
-            <button
-              onClick={() => setMode('electric')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                mode === 'electric'
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('calculator.electric')}
-            </button>
-          </div>
-        </div>
-
         {/* Input Parameters */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
@@ -272,18 +244,16 @@ export default function CalculatorPage() {
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">
               {comparisonMode ? t('calculator.heatpump1') : t('calculator.heatpump')}
             </label>
-            {comparisonMode && (
-              <div className="mb-3">
-                <select
-                  value={selectedHeatpump1Type}
-                  onChange={(e) => setSelectedHeatpump1Type(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 px-3 py-2 text-gray-900 dark:text-gray-100 text-sm mb-2 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10"
-                >
-                  <option value="hybrid">{t('calculator.hybrid')}</option>
-                  <option value="electric">{t('calculator.electric')}</option>
-                </select>
-              </div>
-            )}
+            <div className="mb-3">
+              <select
+                value={selectedHeatpump1Type}
+                onChange={(e) => setSelectedHeatpump1Type(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 px-3 py-2 text-gray-900 dark:text-gray-100 text-sm mb-2 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10"
+              >
+                <option value="hybrid">{t('calculator.hybrid')}</option>
+                <option value="electric">{t('calculator.electric')}</option>
+              </select>
+            </div>
             <select
               value={selectedHeatpump1Index}
               onChange={(e) => setSelectedHeatpump1Index(parseInt(e.target.value))}
