@@ -389,7 +389,7 @@ export default function CalculatorPage() {
             >
               {HEATPUMPS[selectedHeatpump1Type].map((hp, idx) => (
                 <option key={idx} value={idx}>
-                  {hp.brand} {hp.model} (COP: {hp.cop})
+                  {hp.brand} {hp.model} (€{hp.price})
                 </option>
               ))}
             </select>
@@ -464,9 +464,9 @@ export default function CalculatorPage() {
               >
                 {HEATPUMPS[selectedHeatpump2Type].map((hp, idx) => (
                   <option key={idx} value={idx}>
-                    {hp.brand} {hp.model} (COP: {hp.cop})
+                    {hp.brand} {hp.model} (€{hp.price})
                   </option>
-                ))}
+                ))}}
               </select>
               {stats2 && (
                 <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-1 text-sm">
