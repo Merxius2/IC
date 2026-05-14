@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply transition-colors duration-200;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-gradient-to-br from-light-50 via-light-50 to-light-50 text-gray-900;
+  background-image: 
+    linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.03) 15%, rgba(255, 255, 255, 0) 40%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+/* Dark Mode */
+html.dark body {
+  @apply bg-black text-gray-100;
+  background-image: none;
+}
+
+/* Clean Card Style */
+.card {
+  @apply rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-soft hover:shadow-soft-md transition-shadow;
+}
+
+html.dark .card {
+  @apply border-gray-800 bg-gray-900 shadow-soft;
+}
+
+.card-gradient {
+  @apply rounded-2xl border border-gray-100 shadow-soft hover:shadow-soft-md transition-shadow;
+}
+
+.card-income {
+  @apply card-gradient bg-gradient-income;
+}
+
+.card-savings {
+  @apply card-gradient bg-gradient-savings;
+}
+
+.card-expenses {
+  @apply card-gradient bg-gradient-expenses;
+}
+
+.card-summary {
+  @apply card-gradient bg-gradient-summary;
+}
+
+/* Input Styling */
+input[type='number'],
+input[type='text'],
+select {
+  @apply w-full rounded-lg border border-gray-200 bg-white/50 px-3 py-2 text-gray-900 placeholder-gray-400 transition-all focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10;
+}
+
+html.dark input[type='number'],
+html.dark input[type='text'],
+html.dark select {
+  @apply border-gray-800 bg-gray-900/50 text-gray-100 placeholder-gray-500;
+}
+
+/* Status Badges */
+.badge-container {
+  @apply inline-flex flex-col items-center space-y-1;
+}
+
+.badge-above {
+  @apply flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-green-50 shadow-glow-green;
+  color: #059669;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.badge-below {
+  @apply flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-100 to-amber-50 shadow-glow-amber;
+  color: #d97706;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.badge-at {
+  @apply flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50;
+  color: #0284c7;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+/* Glow Effects */
+.glow-green {
+  @apply text-green-600 shadow-glow-green;
+}
+
+.glow-amber {
+  @apply text-amber-600 shadow-glow-amber;
+}
+
+/* Typography */
+.amount {
+  @apply font-mono text-lg font-semibold tracking-wider text-gray-900;
+}
+
+html.dark .amount {
+  @apply text-gray-100;
+}
+
+.amount-large {
+  @apply font-mono text-lg sm:text-xl md:text-xl lg:text-3xl font-bold tracking-tight text-gray-900;
+}
+
+html.dark .amount-large {
+  @apply text-gray-100;
+}
+
+/* Age Bracket Badge */
+.age-badge {
+  @apply inline-flex items-center space-x-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-soft;
+}
+
+html.dark .age-badge {
+  @apply border-dark-300 bg-dark-300 text-gray-300;
+}
+
+/* Dark Mode - Global Styles */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark [class*="bg-white"] {
+  @apply bg-gray-900;
+}
+
+html.dark [class*="border-gray-100"],
+html.dark [class*="border-gray-200"] {
+  @apply border-gray-800;
+}
+
+html.dark [class*="border-b-gray-200"],
+html.dark [class*="border-t-gray-200"] {
+  @apply border-b-gray-800 border-t-gray-800;
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  @apply text-gray-100;
+}
+
+html.dark [class*="text-gray-900"] {
+  @apply text-gray-100;
+}
+
