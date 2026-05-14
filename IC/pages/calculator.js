@@ -485,6 +485,31 @@ export default function CalculatorPage() {
                   stroke={isDarkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"} 
                   strokeDasharray="5,5"
                 />
+                {comparisonMode ? (
+                  <>
+                    <ReferenceLine 
+                      x={stats1.breakEvenYear} 
+                      stroke="#3B82F6"
+                      strokeWidth={2}
+                      label={{ value: `Break-even: ${stats1.breakEvenYear}y`, position: 'top', fill: '#3B82F6', fontSize: 12 }}
+                    />
+                    {stats2 && (
+                      <ReferenceLine 
+                        x={stats2.breakEvenYear} 
+                        stroke="#8B5CF6"
+                        strokeWidth={2}
+                        label={{ value: `Break-even: ${stats2.breakEvenYear}y`, position: 'bottom', fill: '#8B5CF6', fontSize: 12 }}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <ReferenceLine 
+                    x={stats1.breakEvenYear} 
+                    stroke="#10B981"
+                    strokeWidth={2}
+                    label={{ value: `✓ Break-even: ${stats1.breakEvenYear} years`, position: 'topLeft', fill: isDarkMode ? '#10B981' : '#059669', fontSize: 12, offset: 10 }}
+                  />
+                )}
                 <Tooltip
                   contentStyle={{
                     backgroundColor: isDarkMode ? 'rgba(17, 24, 39, 0.8)' : 'rgba(255, 255, 255, 0.8)',
