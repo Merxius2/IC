@@ -246,6 +246,9 @@ const translations = {
       roiProjection: 'ROI Projection',
       years: 'Years',
       savings: 'Cumulative Savings (€)',
+      gasConnection: 'Gas Connection',
+      withConnection: 'With Connection',
+      noConnection: 'Remove Connection',
     },
   },
   nl: {
@@ -495,6 +498,9 @@ const translations = {
       roiProjection: 'ROI Projectie',
       years: 'Jaren',
       savings: 'Cumulatieve Besparing (€)',
+      gasConnection: 'Gasaansluiting',
+      withConnection: 'Met aansluiting',
+      noConnection: 'Aansluiting verwijderen',
     },
   },
   ru: {
@@ -744,6 +750,9 @@ const translations = {
       roiProjection: 'Проекция окупаемости',
       years: 'Годы',
       savings: 'Кумулятивная экономия (€)',
+      gasConnection: 'Газовое подключение',
+      withConnection: 'С подключением',
+      noConnection: 'Удалить подключение',
     },
   },
   tr: {
@@ -992,6 +1001,9 @@ const translations = {
       roiProjection: 'ROI Projeksiyonu',
       years: 'Yıllar',
       savings: 'Kümülatif Tasarruf (€)',
+      gasConnection: 'Gaz Bağlantısı',
+      withConnection: 'Bağlantı ile',
+      noConnection: 'Bağlantıyı Kaldır',
     },
   },
 };

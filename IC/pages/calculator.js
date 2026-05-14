@@ -54,6 +54,7 @@ export default function CalculatorPage() {
 
   // State
   const [comparisonMode, setComparisonMode] = useState(false);
+  const [hasGasConnection, setHasGasConnection] = useState(true);
   const [electricity, setElectricity] = useState(String(DEFAULTS.electricity));
   const [gas, setGas] = useState(String(DEFAULTS.gas));
   const [connection, setConnection] = useState(String(DEFAULTS.connection));
@@ -177,8 +178,13 @@ export default function CalculatorPage() {
     const gasSavings = hpType === 'hybrid' 
       ? currentGasCost * 0.3
       : currentGasCost;
-    const gasSavingsPercent = (gasSavings / currentGasCost) * 100;
-    const annualSavings = gasSavings - annualElecCost;
+    
+    // Add connection cost savings if gas connection is removed
+    const connectionSavings = !hasGasConnection ? (connNum * 365) : 0;
+    const totalGasSavings = gasSavings + connectionSavings;
+    
+    const gasSavingsPercent = currentGasCost > 0 ? (totalGasSavings / currentGasCost) * 100 : 0;
+    const annualSavings = totalGasSavings - annualElecCost;
     
     // Calculate break-even year using direct formula
     const netPrice = heatpump.price - heatpump.subsidy;
@@ -196,7 +202,7 @@ export default function CalculatorPage() {
       subsidy: heatpump.subsidy,
       netPrice: netPrice,
       gasSavingsPercent: Math.round(gasSavingsPercent),
-      gasSavings: Math.round(gasSavings),
+      gasSavings: Math.round(totalGasSavings),
       electricityCost: Math.round(annualElecCost),
       annualSavings: Math.max(0, Math.round(annualSavings)),
       breakEvenYear,
@@ -246,6 +252,33 @@ export default function CalculatorPage() {
               />
             </div>
           ))}
+        </div>
+
+        {/* Gas Connection Toggle */}
+        <div className="card p-6 dark:bg-gray-800">
+          <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.gasConnection')}</h2>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setHasGasConnection(true)}
+              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
+                hasGasConnection
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              {t('calculator.withConnection')}
+            </button>
+            <button
+              onClick={() => setHasGasConnection(false)}
+              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
+                !hasGasConnection
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              {t('calculator.noConnection')}
+            </button>
+          </div>
         </div>
 
         {/* Comparison Toggle */}
