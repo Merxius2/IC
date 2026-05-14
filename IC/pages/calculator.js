@@ -307,7 +307,7 @@ export default function CalculatorPage() {
                   <span className="font-semibold">{stats1.gasSavingsPercent}%</span>
                 </div>
               </div>
-            )}}
+            )}
           </div>
 
           {comparisonMode && (
@@ -359,7 +359,7 @@ export default function CalculatorPage() {
                     <span className="font-semibold">{stats2.gasSavingsPercent}%</span>
                   </div>
                 </div>
-              )}}
+              )}
             </div>
           )}
         </div>
