@@ -396,7 +396,7 @@ export default function CalculatorPage() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">ROI:</span>
-                        <span className="font-bold text-green-600">{stats1.roi.toFixed(0)}%</span>
+                        <span className="font-bold text-green-600">{stats1.breakEvenYear} years</span>
                       </div>
                     </div>
                   </div>
@@ -426,7 +426,7 @@ export default function CalculatorPage() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-sm text-gray-600 dark:text-gray-400">ROI:</span>
-                          <span className="font-bold text-green-600">{stats2.roi.toFixed(0)}%</span>
+                          <span className="font-bold text-green-600">{stats2.breakEvenYear} years</span>
                         </div>
                       </div>
                     </div>
@@ -472,8 +472,8 @@ export default function CalculatorPage() {
                       <p className="text-2xl font-bold text-green-600">€{Math.round(stats1.totalSavings)}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">ROI %</p>
-                      <p className="text-2xl font-bold text-green-600">{stats1.roi.toFixed(0)}%</p>
+                      <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">ROI Years</p>
+                      <p className="text-2xl font-bold text-green-600">{stats1.breakEvenYear} years</p>
                     </div>
                   </div>
                 </div>
