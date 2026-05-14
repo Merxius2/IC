@@ -256,27 +256,24 @@ export default function CalculatorPage() {
 
         {/* Gas Connection Toggle */}
         <div className="card p-6 dark:bg-gray-800">
-          <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.gasConnection')}</h2>
-          <div className="flex gap-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.gasConnection')}</h2>
             <button
-              onClick={() => setHasGasConnection(true)}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
+              onClick={() => setHasGasConnection(!hasGasConnection)}
+              className={`relative inline-flex h-10 w-20 items-center rounded-full transition-all ${
                 hasGasConnection
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
+                  : 'bg-gray-300 dark:bg-gray-600'
               }`}
             >
-              {t('calculator.withConnection')}
-            </button>
-            <button
-              onClick={() => setHasGasConnection(false)}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                !hasGasConnection
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('calculator.noConnection')}
+              <span
+                className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-md transition-transform ${
+                  hasGasConnection ? 'translate-x-1' : 'translate-x-9'
+                }`}
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-900">
+                {hasGasConnection ? t('calculator.withConnection') : t('calculator.noConnection')}
+              </span>
             </button>
           </div>
         </div>
