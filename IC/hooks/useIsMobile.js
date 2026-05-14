@@ -1,10 +1,24 @@
-import { useIsMobileQuery } from '../lib/useMediaQuery';
+import { useEffect, useState } from 'react';
 
 /**
  * Hook to detect if viewport is mobile (< 768px)
- * Wrapper around centralized useMediaQuery for backward compatibility
  * Uses consistent Tailwind md breakpoint (768px)
  */
 export function useIsMobile() {
-  return useIsMobileQuery();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check on mount
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
 }
