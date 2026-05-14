@@ -155,18 +155,11 @@ export default function CalculatorPage() {
     const gasSavingsPercent = (gasSavings / currentGasCost) * 100;
     const annualSavings = gasSavings - annualElecCost;
     
-    // Find break-even year
-    let breakEvenYear = 0;
-    const roi = calculateROI(heatpump, hpType);
-    for (let i = 0; i < roi.length; i++) {
-      if (roi[i].cumulative >= 0) {
-        breakEvenYear = roi[i].year;
-        break;
-      }
-    }
+    // Calculate break-even year using direct formula
+    const netPrice = heatpump.price - heatpump.subsidy;
+    let breakEvenYear = annualSavings > 0 ? Math.ceil(netPrice / annualSavings) : 999;
     
     // Total 20-year savings (based on net price after subsidy)
-    const netPrice = heatpump.price - heatpump.subsidy;
     const totalSavings20yr = Math.max(0, (annualSavings * 20) - netPrice);
     
     // ROI percentage
