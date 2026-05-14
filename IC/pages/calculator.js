@@ -4,7 +4,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Zap } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
@@ -122,7 +122,11 @@ export default function CalculatorPage() {
     const roi1 = calculateROI(hp1, hp1Type);
     
     if (!comparisonMode) {
-      return roi1;
+      // For single mode, show cumulative ROI (includes investment cost)
+      return roi1.map(item => ({
+        year: item.year,
+        roi: item.cumulative,
+      }));
     }
     
     // For comparison, merge both heatpumps
@@ -474,7 +478,12 @@ export default function CalculatorPage() {
                 />
                 <YAxis
                   stroke={isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)"}
-                  label={{ value: t('calculator.savings'), angle: -90, position: 'insideLeft' }}
+                  label={{ value: 'Net ROI (€)', angle: -90, position: 'insideLeft' }}
+                />
+                <ReferenceLine 
+                  y={0} 
+                  stroke={isDarkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"} 
+                  strokeDasharray="5,5"
                 />
                 <Tooltip
                   contentStyle={{
@@ -507,7 +516,7 @@ export default function CalculatorPage() {
                 ) : (
                   <Area
                     type="monotone"
-                    dataKey="savings"
+                    dataKey="roi"
                     stroke="#3B82F6"
                     fillOpacity={1}
                     fill="url(#colorSavings1)"
