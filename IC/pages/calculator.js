@@ -11,31 +11,31 @@ import { useDarkMode } from '../context/DarkModeContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import PageHeader from '../components/PageHeader';
 
-// Heatpump data: 10 options per type
+// Heatpump data: 10 options per type with real brands and models
 const HEATPUMPS = {
   hybrid: [
-    { name: 'Daikin Altherma 3', price: 12500, cop: 4.2 },
-    { name: 'Viessmann Vitocal 200S', price: 13000, cop: 4.1 },
-    { name: 'Mitsubishi Electric PUHZ', price: 14000, cop: 4.3 },
-    { name: 'Bosch Compress 3000', price: 12000, cop: 4.0 },
-    { name: 'Vaillant aroTHERM hybrid', price: 13500, cop: 4.2 },
-    { name: 'Stiebel Eltron WPL 14E', price: 15000, cop: 4.4 },
-    { name: 'IVT CompAct S+ Hybrid', price: 13200, cop: 4.1 },
-    { name: 'Wolf CSZ 300-3 Hybrid', price: 12800, cop: 4.0 },
-    { name: 'Ochsner OCHSNER 570 hybrid', price: 14500, cop: 4.3 },
-    { name: 'Stiebel Eltron WPL 13E', price: 14200, cop: 4.2 },
+    { brand: 'Quatt', model: 'Hybrid 4 kW', price: 3600, subsidy: 2400, cop: 4.8 },
+    { brand: 'Atlantic', model: 'Aurea 5 kW', price: 4400, subsidy: 2550, cop: 4.5 },
+    { brand: 'Remeha', model: 'Elga Ace 4 kW', price: 4500, subsidy: 2400, cop: 4.5 },
+    { brand: 'Nefit Bosch', model: 'Compress 3400i AWS 4 kW', price: 4700, subsidy: 2400, cop: 4.5 },
+    { brand: 'Intergas', model: 'Xtend 5 kW', price: 4800, subsidy: 2400, cop: 4.7 },
+    { brand: 'Itho Daalderop', model: 'HP-S 54 5 kW', price: 4900, subsidy: 2550, cop: 4.6 },
+    { brand: 'Daikin', model: 'Altherma 3 H 4 kW', price: 5000, subsidy: 2400, cop: 4.6 },
+    { brand: 'Panasonic', model: 'Aquarea 5 kW', price: 5000, subsidy: 2550, cop: 4.9 },
+    { brand: 'Mitsubishi Electric', model: 'Ecodan 4 kW', price: 5100, subsidy: 2400, cop: 4.7 },
+    { brand: 'Vaillant', model: 'aroTHERM plus 5 kW', price: 5200, subsidy: 2550, cop: 4.8 },
   ],
   electric: [
-    { name: 'Daikin Altherma 3', price: 11000, cop: 3.5 },
-    { name: 'Viessmann Vitocal 200A', price: 10500, cop: 3.4 },
-    { name: 'Mitsubishi Electric PUHZ-W', price: 12000, cop: 3.6 },
-    { name: 'Bosch Compress 6000', price: 9800, cop: 3.3 },
-    { name: 'Vaillant aroTHERM split', price: 11200, cop: 3.5 },
-    { name: 'Stiebel Eltron WPL 7S', price: 10800, cop: 3.4 },
-    { name: 'IVT CompAct S+', price: 10200, cop: 3.3 },
-    { name: 'Wolf CSZ 300-3 Air', price: 11500, cop: 3.5 },
-    { name: 'Ochsner OCHSNER 570', price: 12500, cop: 3.6 },
-    { name: 'Stiebel Eltron WPL 6S', price: 10000, cop: 3.4 },
+    { brand: 'Remeha', model: 'Mercuria 8 kW', price: 9500, subsidy: 3150, cop: 4.6 },
+    { brand: 'Itho Daalderop', model: 'Amber 6.5 kW', price: 9800, subsidy: 2925, cop: 5.0 },
+    { brand: 'Panasonic', model: 'Aquarea K-serie 7 kW', price: 10200, subsidy: 3000, cop: 5.1 },
+    { brand: 'Vaillant', model: 'aroTHERM plus 7 kW', price: 10500, subsidy: 3000, cop: 4.9 },
+    { brand: 'Mitsubishi Electric', model: 'Ecodan 8 kW', price: 10800, subsidy: 3150, cop: 4.7 },
+    { brand: 'Daikin', model: 'Altherma 3 R 8 kW', price: 11000, subsidy: 3150, cop: 4.8 },
+    { brand: 'Nefit Bosch', model: 'Compress 7400i 7 kW', price: 11500, subsidy: 3000, cop: 4.9 },
+    { brand: 'Alpha Innotec', model: 'Alira 7 kW', price: 12000, subsidy: 3000, cop: 4.8 },
+    { brand: 'NIBE', model: 'S2125 8 kW', price: 12500, subsidy: 3150, cop: 5.2 },
+    { brand: 'Viessmann', model: 'Vitocal 250-A 8 kW', price: 13000, subsidy: 3150, cop: 5.1 },
   ],
 };
 
@@ -84,7 +84,7 @@ export default function CalculatorPage() {
     if (!heatpump) return [];
     
     const data = [];
-    const hpCost = heatpump.price;
+    const hpCost = heatpump.price - heatpump.subsidy; // Use net price after subsidy
     const cop = heatpump.cop;
     
     // Annual heating demand in kWh
@@ -165,15 +165,18 @@ export default function CalculatorPage() {
       }
     }
     
-    // Total 20-year savings
-    const totalSavings20yr = Math.max(0, (annualSavings * 20) - heatpump.price);
+    // Total 20-year savings (based on net price after subsidy)
+    const netPrice = heatpump.price - heatpump.subsidy;
+    const totalSavings20yr = Math.max(0, (annualSavings * 20) - netPrice);
     
     // ROI percentage
-    const roiPercent = ((totalSavings20yr / heatpump.price) * 100);
+    const roiPercent = ((totalSavings20yr / netPrice) * 100);
     
     return {
       cop: heatpump.cop,
       price: heatpump.price,
+      subsidy: heatpump.subsidy,
+      netPrice: netPrice,
       gasSavingsPercent: Math.round(gasSavingsPercent),
       gasSavings: Math.round(gasSavings),
       electricityCost: Math.round(annualElecCost),
@@ -277,7 +280,7 @@ export default function CalculatorPage() {
             >
               {HEATPUMPS[selectedHeatpump1Type].map((hp, idx) => (
                 <option key={idx} value={idx}>
-                  {hp.name} (COP: {hp.cop})
+                  {hp.brand} {hp.model} (COP: {hp.cop})
                 </option>
               ))}
             </select>
@@ -288,6 +291,14 @@ export default function CalculatorPage() {
                   <span className="font-semibold">€{stats1.price}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Subsidy:</span>
+                  <span className="font-semibold text-green-600">-€{stats1.subsidy}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-1 mb-1">
+                  <span className="text-gray-600 dark:text-gray-400">Net Price:</span>
+                  <span className="font-semibold">€{stats1.netPrice}</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">COP:</span>
                   <span className="font-semibold">{stats1.cop}</span>
                 </div>
@@ -296,7 +307,7 @@ export default function CalculatorPage() {
                   <span className="font-semibold">{stats1.gasSavingsPercent}%</span>
                 </div>
               </div>
-            )}
+            )}}
           </div>
 
           {comparisonMode && (
@@ -321,7 +332,7 @@ export default function CalculatorPage() {
               >
                 {HEATPUMPS[selectedHeatpump2Type].map((hp, idx) => (
                   <option key={idx} value={idx}>
-                    {hp.name} (COP: {hp.cop})
+                    {hp.brand} {hp.model} (COP: {hp.cop})
                   </option>
                 ))}
               </select>
@@ -332,6 +343,14 @@ export default function CalculatorPage() {
                     <span className="font-semibold">€{stats2.price}</span>
                   </div>
                   <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Subsidy:</span>
+                    <span className="font-semibold text-green-600">-€{stats2.subsidy}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-1 mb-1">
+                    <span className="text-gray-600 dark:text-gray-400">Net Price:</span>
+                    <span className="font-semibold">€{stats2.netPrice}</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">COP:</span>
                     <span className="font-semibold">{stats2.cop}</span>
                   </div>
@@ -340,7 +359,7 @@ export default function CalculatorPage() {
                     <span className="font-semibold">{stats2.gasSavingsPercent}%</span>
                   </div>
                 </div>
-              )}
+              )}}
             </div>
           )}
         </div>
@@ -353,7 +372,7 @@ export default function CalculatorPage() {
                 {/* Comparison View - Side by Side */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="card p-6 dark:bg-gray-800">
-                    <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">{hp1?.name}</h3>
+                    <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">{hp1?.brand} {hp1?.model}</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Gas Savings:</span>
@@ -383,7 +402,7 @@ export default function CalculatorPage() {
                   </div>
                   {stats2 && (
                     <div className="card p-6 dark:bg-gray-800">
-                      <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">{hp2?.name}</h3>
+                      <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">{hp2?.brand} {hp2?.model}</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
                           <span className="text-sm text-gray-600 dark:text-gray-400">Gas Savings:</span>
@@ -418,7 +437,7 @@ export default function CalculatorPage() {
               <>
                 {/* Single View */}
                 <div className="card p-6 dark:bg-gray-800">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4 text-lg">{hp1?.name}</h3>
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4 text-lg">{hp1?.brand} {hp1?.model}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm">Breakdown</h4>
@@ -515,7 +534,7 @@ export default function CalculatorPage() {
                       stroke="#3B82F6"
                       fillOpacity={1}
                       fill="url(#colorSavings1)"
-                      name={hp1?.name}
+                      name={`${hp1?.brand} ${hp1?.model}`}
                     />
                     <Area
                       type="monotone"
@@ -523,7 +542,7 @@ export default function CalculatorPage() {
                       stroke="#8B5CF6"
                       fillOpacity={1}
                       fill="url(#colorSavings2)"
-                      name={hp2?.name}
+                      name={`${hp2?.brand} ${hp2?.model}`}
                     />
                   </>
                 ) : (
