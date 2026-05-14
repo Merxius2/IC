@@ -254,7 +254,7 @@ export default function CalculatorPage() {
           ))}
         </div>
 
-        {/* Comparison Toggle */
+        {/* Comparison Toggle */}
         <div className="card p-6 dark:bg-gray-800">
           <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.view')}</h2>
           <div className="flex gap-4">
