@@ -9,6 +9,7 @@ import { Zap } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { useCookieStorage } from '../hooks/useCookieStorage';
 import PageHeader from '../components/PageHeader';
 
 // Heatpump data: 10 options per type with real brands and models
@@ -52,18 +53,75 @@ export default function CalculatorPage() {
   const { isDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
 
-  // State
-  const [comparisonMode, setComparisonMode] = useState(false);
-  const [electricity, setElectricity] = useState(String(DEFAULTS.electricity));
-  const [gas, setGas] = useState(String(DEFAULTS.gas));
-  const [connection, setConnection] = useState(String(DEFAULTS.connection));
-  const [consumption, setConsumption] = useState(String(DEFAULTS.consumption));
-  const [selectedHeatpump1Type, setSelectedHeatpump1Type] = useState('hybrid');
-  const [selectedHeatpump1Index, setSelectedHeatpump1Index] = useState(0);
-  const [hasGasConnection1, setHasGasConnection1] = useState(true);
-  const [selectedHeatpump2Type, setSelectedHeatpump2Type] = useState('electric');
-  const [selectedHeatpump2Index, setSelectedHeatpump2Index] = useState(0);
-  const [hasGasConnection2, setHasGasConnection2] = useState(true);
+  // Cookie storage for persistent state
+  const { data: savedData, isLoading, updateData } = useCookieStorage('CALC_HEATPUMP_DATA', {
+    comparisonMode: false,
+    electricity: String(DEFAULTS.electricity),
+    gas: String(DEFAULTS.gas),
+    connection: String(DEFAULTS.connection),
+    consumption: String(DEFAULTS.consumption),
+    selectedHeatpump1Type: 'hybrid',
+    selectedHeatpump1Index: 0,
+    hasGasConnection1: true,
+    selectedHeatpump2Type: 'electric',
+    selectedHeatpump2Index: 0,
+    hasGasConnection2: true,
+  });
+
+  // Local state that syncs with cookies
+  const [comparisonMode, setComparisonMode] = useState(savedData.comparisonMode);
+  const [electricity, setElectricity] = useState(savedData.electricity);
+  const [gas, setGas] = useState(savedData.gas);
+  const [connection, setConnection] = useState(savedData.connection);
+  const [consumption, setConsumption] = useState(savedData.consumption);
+  const [selectedHeatpump1Type, setSelectedHeatpump1Type] = useState(savedData.selectedHeatpump1Type);
+  const [selectedHeatpump1Index, setSelectedHeatpump1Index] = useState(savedData.selectedHeatpump1Index);
+  const [hasGasConnection1, setHasGasConnection1] = useState(savedData.hasGasConnection1);
+  const [selectedHeatpump2Type, setSelectedHeatpump2Type] = useState(savedData.selectedHeatpump2Type);
+  const [selectedHeatpump2Index, setSelectedHeatpump2Index] = useState(savedData.selectedHeatpump2Index);
+  const [hasGasConnection2, setHasGasConnection2] = useState(savedData.hasGasConnection2);
+
+  // Helper function to update both local state and cookie
+  const updateCalculatorState = (field, value) => {
+    switch(field) {
+      case 'comparisonMode':
+        setComparisonMode(value);
+        break;
+      case 'electricity':
+        setElectricity(value);
+        break;
+      case 'gas':
+        setGas(value);
+        break;
+      case 'connection':
+        setConnection(value);
+        break;
+      case 'consumption':
+        setConsumption(value);
+        break;
+      case 'selectedHeatpump1Type':
+        setSelectedHeatpump1Type(value);
+        break;
+      case 'selectedHeatpump1Index':
+        setSelectedHeatpump1Index(value);
+        break;
+      case 'hasGasConnection1':
+        setHasGasConnection1(value);
+        break;
+      case 'selectedHeatpump2Type':
+        setSelectedHeatpump2Type(value);
+        break;
+      case 'selectedHeatpump2Index':
+        setSelectedHeatpump2Index(value);
+        break;
+      case 'hasGasConnection2':
+        setHasGasConnection2(value);
+        break;
+      default:
+        break;
+    }
+    updateData(field, value);
+  };
 
   const elecNum = parseFloat(electricity) || 0;
   const gasNum = parseFloat(gas) || 0;
@@ -233,14 +291,21 @@ export default function CalculatorPage() {
     <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0 dark:bg-gray-900">
       <PageHeader icon={Zap} titleKey="calculator.title" />
 
+      {isLoading ? (
+        <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
+          <div className="card p-8 dark:bg-gray-800 text-center">
+            <p className="text-gray-600 dark:text-gray-400">Loading calculator...</p>
+          </div>
+        </div>
+      ) : (
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Input Parameters */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { label: t('calculator.electricity'), value: electricity, setValue: setElectricity, placeholder: '0.25' },
-            { label: t('calculator.gas'), value: gas, setValue: setGas, placeholder: '1.30' },
-            { label: t('calculator.connection'), value: connection, setValue: setConnection, placeholder: '1.00' },
-            { label: t('calculator.consumption'), value: consumption, setValue: setConsumption, placeholder: '1000' },
+            { label: t('calculator.electricity'), value: electricity, field: 'electricity', placeholder: '0.25' },
+            { label: t('calculator.gas'), value: gas, field: 'gas', placeholder: '1.30' },
+            { label: t('calculator.connection'), value: connection, field: 'connection', placeholder: '1.00' },
+            { label: t('calculator.consumption'), value: consumption, field: 'consumption', placeholder: '1000' },
           ].map((field, idx) => (
             <div key={idx} className="card p-4 dark:bg-gray-800">
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">
@@ -249,7 +314,7 @@ export default function CalculatorPage() {
               <input
                 type="number"
                 value={field.value}
-                onChange={(e) => field.setValue(e.target.value)}
+                onChange={(e) => updateCalculatorState(field.field, e.target.value)}
                 placeholder={field.placeholder}
                 className="w-full border-0 bg-transparent text-lg font-semibold text-gray-900 dark:text-gray-100 focus:ring-0"
               />
@@ -262,7 +327,7 @@ export default function CalculatorPage() {
           <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('calculator.view')}</h2>
           <div className="flex gap-4">
             <button
-              onClick={() => setComparisonMode(false)}
+              onClick={() => updateCalculatorState('comparisonMode', false)}
               className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
                 !comparisonMode
                   ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
@@ -272,7 +337,7 @@ export default function CalculatorPage() {
               {t('calculator.single')}
             </button>
             <button
-              onClick={() => setComparisonMode(true)}
+              onClick={() => updateCalculatorState('comparisonMode', true)}}
               className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
                 comparisonMode
                   ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
@@ -293,7 +358,7 @@ export default function CalculatorPage() {
             <div className="mb-3">
               <select
                 value={selectedHeatpump1Type}
-                onChange={(e) => setSelectedHeatpump1Type(e.target.value)}
+                onChange={(e) => updateCalculatorState('selectedHeatpump1Type', e.target.value)}
                 className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 px-3 py-2 text-gray-900 dark:text-gray-100 text-sm mb-2 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10"
               >
                 <option value="hybrid">{t('calculator.hybrid')}</option>
@@ -302,7 +367,7 @@ export default function CalculatorPage() {
             </div>
             <select
               value={selectedHeatpump1Index}
-              onChange={(e) => setSelectedHeatpump1Index(parseInt(e.target.value))}
+              onChange={(e) => updateCalculatorState('selectedHeatpump1Index', parseInt(e.target.value))}
               className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 px-3 py-2 text-gray-900 dark:text-gray-100 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10"
             >
               {HEATPUMPS[selectedHeatpump1Type].map((hp, idx) => (
@@ -342,7 +407,7 @@ export default function CalculatorPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{t('calculator.gasConnection')}</span>
                   <button
-                    onClick={() => setHasGasConnection1(!hasGasConnection1)}
+                    onClick={() => updateCalculatorState('hasGasConnection1', !hasGasConnection1)}
                     className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all ${
                       hasGasConnection1
                         ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
@@ -368,7 +433,7 @@ export default function CalculatorPage() {
               <div className="mb-3">
                 <select
                   value={selectedHeatpump2Type}
-                  onChange={(e) => setSelectedHeatpump2Type(e.target.value)}
+                  onChange={(e) => updateCalculatorState('selectedHeatpump2Type', e.target.value)}
                   className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 px-3 py-2 text-gray-900 dark:text-gray-100 text-sm mb-2 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10"
                 >
                   <option value="hybrid">{t('calculator.hybrid')}</option>
@@ -377,7 +442,7 @@ export default function CalculatorPage() {
               </div>
               <select
                 value={selectedHeatpump2Index}
-                onChange={(e) => setSelectedHeatpump2Index(parseInt(e.target.value))}
+                onChange={(e) => updateCalculatorState('selectedHeatpump2Index', parseInt(e.target.value))}
                 className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 px-3 py-2 text-gray-900 dark:text-gray-100 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10"
               >
                 {HEATPUMPS[selectedHeatpump2Type].map((hp, idx) => (
@@ -417,7 +482,7 @@ export default function CalculatorPage() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{t('calculator.gasConnection')}</span>
                     <button
-                      onClick={() => setHasGasConnection2(!hasGasConnection2)}
+                      onClick={() => updateCalculatorState('hasGasConnection2', !hasGasConnection2)}
                       className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all ${
                         hasGasConnection2
                           ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
@@ -643,6 +708,7 @@ export default function CalculatorPage() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
