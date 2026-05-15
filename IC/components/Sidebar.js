@@ -78,7 +78,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-gray-200 bg-white p-6 shadow-soft transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 ${
+        className={`fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-gray-200 bg-white p-6 shadow-soft transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 max-md:hidden ${
           isLargeScreen 
             ? 'translate-x-0 lg:flex' 
             : isSidebarOpen 

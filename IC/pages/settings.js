@@ -4,11 +4,10 @@
  */
 
 import { useState } from 'react';
-import { Settings as SettingsIcon, Trash2, Globe, DollarSign, Moon, Sun, Zap, Plus, Edit2, Save, X, ChevronDown } from 'lucide-react';
+import { Settings as SettingsIcon, Trash2, Globe, Moon, Sun, Zap, Plus, Edit2, Save, X, ChevronDown } from 'lucide-react';
 import { deleteCookie } from '../lib/cookieStorage';
 import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
-import { useCurrency } from '../context/CurrencyContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useSecretSettings } from '../context/SecretSettingsContext';
 import { useSidebar } from '../context/SidebarContext';
@@ -21,14 +20,6 @@ const LANGUAGES = [
   { code: 'nl', flag: '🇳🇱', name: 'Dutch', icon: '/icon-n-192.png' },
   { code: 'ru', flag: '🇷🇺', name: 'Russian', icon: '/icon-r-192.png' },
   { code: 'tr', flag: '🇹🇷', name: 'Turkish', icon: '/icon-t-192.png' },
-];
-
-const CURRENCY_OPTIONS = [
-  { code: 'EUR', symbol: '€', name: 'Euro', flag: '🇪🇺' },
-  { code: 'USD', symbol: '$', name: 'Dollar', flag: '🇺🇸' },
-  { code: 'GBP', symbol: '£', name: 'Pound', flag: '🇬🇧' },
-  { code: 'RUB', symbol: '₽', name: 'Ruble', flag: '🇷🇺' },
-  { code: 'TRY', symbol: '₺', name: 'Lira', flag: '🇹🇷' },
 ];
 
 const ICON_MAP = {
@@ -44,7 +35,6 @@ export default function SettingsPage() {
   const [clickCount, setClickCount] = useState(0);
   const router = useRouter();
   const { t, language, changeLanguage } = useLanguage();
-  const { currency, changeCurrency } = useCurrency();
   const { isDarkMode, toggleDarkMode, isAutoMode, toggleAutoMode } = useDarkMode();
   const { openSecretSettings } = useSecretSettings();
   const { toggleSidebar } = useSidebar();
@@ -53,28 +43,28 @@ export default function SettingsPage() {
   // Default heatpumps function
   const getDefaultHeatpumps = () => ({
     hybrid: [
-      { id: 'h1', brand: 'Quatt', model: 'Hybrid 4 kW', price: 3600, subsidy: 2400, cop: 4.8 },
-      { id: 'h2', brand: 'Atlantic', model: 'Aurea 5 kW', price: 4400, subsidy: 2550, cop: 4.5 },
-      { id: 'h3', brand: 'Remeha', model: 'Elga Ace 4 kW', price: 4500, subsidy: 2400, cop: 4.5 },
-      { id: 'h4', brand: 'Nefit Bosch', model: 'Compress 3400i AWS 4 kW', price: 4700, subsidy: 2400, cop: 4.5 },
-      { id: 'h5', brand: 'Intergas', model: 'Xtend 5 kW', price: 4800, subsidy: 2400, cop: 4.7 },
-      { id: 'h6', brand: 'Itho Daalderop', model: 'HP-S 54 5 kW', price: 4900, subsidy: 2550, cop: 4.6 },
-      { id: 'h7', brand: 'Daikin', model: 'Altherma 3 H 4 kW', price: 5000, subsidy: 2400, cop: 4.6 },
-      { id: 'h8', brand: 'Panasonic', model: 'Aquarea 5 kW', price: 5000, subsidy: 2550, cop: 4.9 },
-      { id: 'h9', brand: 'Mitsubishi Electric', model: 'Ecodan 4 kW', price: 5100, subsidy: 2400, cop: 4.7 },
-      { id: 'h10', brand: 'Vaillant', model: 'aroTHERM plus 5 kW', price: 5200, subsidy: 2550, cop: 4.8 },
+      { id: 'h1', brand: 'Quatt', model: 'Hybrid 4 kW', price: 4400, subsidy: 2625, cop: 4.8 },
+      { id: 'h2', brand: 'Atlantic', model: 'Aurea 5 kW', price: 4550, subsidy: 2100, cop: 4.5 },
+      { id: 'h3', brand: 'Remeha', model: 'Elga Ace 4 kW', price: 5000, subsidy: 1900, cop: 4.5 },
+      { id: 'h4', brand: 'Nefit Bosch', model: 'Compress 3400i 4 kW', price: 5200, subsidy: 2125, cop: 4.5 },
+      { id: 'h5', brand: 'Intergas', model: 'Xtend 5 kW', price: 5100, subsidy: 2100, cop: 4.7 },
+      { id: 'h6', brand: 'Itho Daalderop', model: 'HP-S 54 5 kW', price: 5400, subsidy: 2400, cop: 4.6 },
+      { id: 'h7', brand: 'Daikin', model: 'Altherma 3 H 4 kW', price: 6400, subsidy: 2200, cop: 4.6 },
+      { id: 'h8', brand: 'Panasonic', model: 'Aquarea 5 kW (L-serie)', price: 7250, subsidy: 2350, cop: 4.9 },
+      { id: 'h9', brand: 'Mitsubishi Electric', model: 'Ecodan 4 kW', price: 8500, subsidy: 2100, cop: 4.7 },
+      { id: 'h10', brand: 'Vaillant', model: 'aroTHERM plus 5 kW', price: 6700, subsidy: 2125, cop: 4.8 },
     ],
     electric: [
-      { id: 'e1', brand: 'Remeha', model: 'Mercuria 8 kW', price: 9500, subsidy: 3150, cop: 4.6 },
-      { id: 'e2', brand: 'Itho Daalderop', model: 'Amber 6.5 kW', price: 9800, subsidy: 2925, cop: 5.0 },
-      { id: 'e3', brand: 'Panasonic', model: 'Aquarea K-serie 7 kW', price: 10200, subsidy: 3000, cop: 5.1 },
-      { id: 'e4', brand: 'Vaillant', model: 'aroTHERM plus 7 kW', price: 10500, subsidy: 3000, cop: 4.9 },
-      { id: 'e5', brand: 'Mitsubishi Electric', model: 'Ecodan 8 kW', price: 10800, subsidy: 3150, cop: 4.7 },
-      { id: 'e6', brand: 'Daikin', model: 'Altherma 3 R 8 kW', price: 11000, subsidy: 3150, cop: 4.8 },
-      { id: 'e7', brand: 'Nefit Bosch', model: 'Compress 7400i 7 kW', price: 11500, subsidy: 3000, cop: 4.9 },
-      { id: 'e8', brand: 'Alpha Innotec', model: 'Alira 7 kW', price: 12000, subsidy: 3000, cop: 4.8 },
-      { id: 'e9', brand: 'NIBE', model: 'S2125 8 kW', price: 12500, subsidy: 3150, cop: 5.2 },
-      { id: 'e10', brand: 'Viessmann', model: 'Vitocal 250-A 8 kW', price: 13000, subsidy: 3150, cop: 5.1 },
+      { id: 'e1', brand: 'Remeha', model: 'Mercuria 8 kW', price: 11250, subsidy: 3025, cop: 4.6 },
+      { id: 'e2', brand: 'Itho Daalderop', model: 'Amber 6.5 kW', price: 10500, subsidy: 2675, cop: 5.0 },
+      { id: 'e3', brand: 'Panasonic', model: 'Aquarea K-serie 7 kW', price: 12250, subsidy: 2800, cop: 5.1 },
+      { id: 'e4', brand: 'Vaillant', model: 'aroTHERM plus 7 kW', price: 12750, subsidy: 2800, cop: 4.9 },
+      { id: 'e5', brand: 'Mitsubishi Electric', model: 'Ecodan 8 kW', price: 14250, subsidy: 3025, cop: 4.7 },
+      { id: 'e6', brand: 'Daikin', model: 'Altherma 3 R 8 kW', price: 13250, subsidy: 3025, cop: 4.8 },
+      { id: 'e7', brand: 'Nefit Bosch', model: 'Compress 7400i 7 kW', price: 13750, subsidy: 2800, cop: 4.9 },
+      { id: 'e8', brand: 'Alpha Innotec', model: 'Alira 7 kW', price: 14750, subsidy: 3000, cop: 4.8 },
+      { id: 'e9', brand: 'NIBE', model: 'S2125 8 kW', price: 16500, subsidy: 3225, cop: 5.2 },
+      { id: 'e10', brand: 'Viessmann', model: 'Vitocal 250-A 8 kW', price: 17750, subsidy: 3225, cop: 5.1 },
     ],
   });
 
@@ -83,7 +73,7 @@ export default function SettingsPage() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
   const [newHeatpump, setNewHeatpump] = useState({ type: 'hybrid', brand: '', model: '', price: '', subsidy: '', cop: '' });
-  const [expandedType, setExpandedType] = useState('hybrid');
+  const [expandedType, setExpandedType] = useState(null);
 
   // Save heatpumps
   const saveHeatpumps = (updated) => {
@@ -198,30 +188,6 @@ export default function SettingsPage() {
               >
                 <span className="text-3xl font-semibold">{lang.flag}</span>
                 <span className="text-xs font-medium text-center">{lang.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Currency Selection Section */}
-        <div className="card p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <DollarSign size={28} className="text-brand-primary" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.currency')}</h2>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">{t('settings.currencyDesc')}</p>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
-            {CURRENCY_OPTIONS.map((curr) => (
-              <button
-                key={curr.code}
-                onClick={() => changeCurrency(curr.code)}
-                className={`flex flex-col items-center gap-3 rounded-lg p-6 transition-all ${
-                  currency === curr.code
-                    ? 'bg-gradient-to-br from-brand-primary to-brand-secondary text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                <span className="text-4xl font-bold">{curr.symbol}</span>
               </button>
             ))}
           </div>
