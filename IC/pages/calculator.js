@@ -44,7 +44,7 @@ const HEATPUMPS = {
 const DEFAULTS = {
   electricity: 0.25,
   gas: 1.30,
-  connection: 1.00,
+  connection: 250,
   consumption: 1000,
 };
 
@@ -118,6 +118,11 @@ export default function CalculatorPage() {
         break;
       case 'selectedHeatpump1Type':
         setSelectedHeatpump1Type(value);
+        // Auto-enable gas connection when switching to hybrid
+        if (value === 'hybrid' && !hasGasConnection1) {
+          setHasGasConnection1(true);
+          updateData('hasGasConnection1', true);
+        }
         break;
       case 'selectedHeatpump1Index':
         setSelectedHeatpump1Index(value);
@@ -127,6 +132,11 @@ export default function CalculatorPage() {
         break;
       case 'selectedHeatpump2Type':
         setSelectedHeatpump2Type(value);
+        // Auto-enable gas connection when switching to hybrid
+        if (value === 'hybrid' && !hasGasConnection2) {
+          setHasGasConnection2(true);
+          updateData('hasGasConnection2', true);
+        }
         break;
       case 'selectedHeatpump2Index':
         setSelectedHeatpump2Index(value);
@@ -146,7 +156,7 @@ export default function CalculatorPage() {
   const consNum = parseFloat(consumption) || 0;
 
   // Calculate annual costs
-  const currentGasCost = (gasNum * consNum) + (connNum * 365);
+  const currentGasCost = (gasNum * consNum) + connNum;
   const gasCostPerKwh = gasNum * 0.0107; // 1 m³ gas ≈ 10.7 kWh equivalent
 
   // Get heatpump data - always use selected types
@@ -157,7 +167,7 @@ export default function CalculatorPage() {
   const hp2 = comparisonMode ? HEATPUMPS[hp2Type][selectedHeatpump2Index] : null;
 
   // Calculate ROI data for one heatpump
-  const calculateROI = (heatpump, hpType = 'hybrid', yearRange = 25) => {
+  const calculateROI = (heatpump, hpType = 'hybrid', yearRange = 25, hasGasConnection = true) => {
     if (!heatpump) return [];
     
     const data = [];
@@ -174,9 +184,12 @@ export default function CalculatorPage() {
       : annualHeatingDemandKwh;       // 100% via heatpump in electric mode
     
     const annualElecCost = (heatingViaHeatpump / cop) * elecNum;
-    const annualGasCostReduction = hpType === 'hybrid' 
-      ? currentGasCost * 0.3  // 30% gas reduction with hybrid
+    const gasCostReduction = hpType === 'hybrid' 
+      ? currentGasCost * 0.65  // 65% gas reduction with hybrid
       : currentGasCost;       // All gas eliminated with electric
+    // Add connection cost savings if gas connection is removed
+    const connectionSavings = !hasGasConnection ? connNum : 0;
+    const annualGasCostReduction = gasCostReduction + connectionSavings;
     const annualSavings = annualGasCostReduction - annualElecCost;
     
     for (let year = 0; year <= yearRange; year++) {
@@ -201,9 +214,9 @@ export default function CalculatorPage() {
         : (consNum * 10.7);
       const annualElecCost = (heatingViaHeatpump / heatpump.cop) * elecNum;
       const gasSavings = hpType === 'hybrid' 
-        ? currentGasCost * 0.3 
+        ? currentGasCost * 0.65 
         : currentGasCost;
-      const connectionSavings = !hasGasConnection ? (connNum * 365) : 0;
+      const connectionSavings = !hasGasConnection ? connNum : 0;
       const totalGasSavings = gasSavings + connectionSavings;
       const annualSavings = totalGasSavings - annualElecCost;
       const netPrice = heatpump.price - heatpump.subsidy;
@@ -223,7 +236,7 @@ export default function CalculatorPage() {
     if (!hp1) return [];
     
     const yearRange = getMinimumYearRange();
-    const roi1 = calculateROI(hp1, hp1Type, yearRange);
+    const roi1 = calculateROI(hp1, hp1Type, yearRange, hasGasConnection1);
     
     if (!comparisonMode) {
       // For single mode, show cumulative ROI (includes investment cost)
@@ -234,7 +247,7 @@ export default function CalculatorPage() {
     }
     
     // For comparison, merge both heatpumps
-    const roi2 = calculateROI(hp2, hp2Type, yearRange);
+    const roi2 = calculateROI(hp2, hp2Type, yearRange, hasGasConnection2);
     const maxLen = Math.max(roi1.length, roi2.length);
     
     return Array.from({ length: maxLen }, (_, i) => ({
@@ -254,11 +267,11 @@ export default function CalculatorPage() {
     
     const annualElecCost = (heatingViaHeatpump / heatpump.cop) * elecNum;
     const gasSavings = hpType === 'hybrid' 
-      ? currentGasCost * 0.3
+      ? currentGasCost * 0.65
       : currentGasCost;
     
     // Add connection cost savings if gas connection is removed
-    const connectionSavings = !hasGasConnection ? (connNum * 365) : 0;
+    const connectionSavings = !hasGasConnection ? connNum : 0;
     const totalGasSavings = gasSavings + connectionSavings;
     
     const gasSavingsPercent = currentGasCost > 0 ? (totalGasSavings / currentGasCost) * 100 : 0;
@@ -321,7 +334,7 @@ export default function CalculatorPage() {
           {[
             { label: t('calculator.electricity'), value: electricity, field: 'electricity', placeholder: '0.25' },
             { label: t('calculator.gas'), value: gas, field: 'gas', placeholder: '1.30' },
-            { label: t('calculator.connection'), value: connection, field: 'connection', placeholder: '1.00' },
+            { label: t('calculator.connection'), value: connection, field: 'connection', placeholder: '250' },
             { label: t('calculator.consumption'), value: consumption, field: 'consumption', placeholder: '1000' },
           ].map((field, idx) => (
             <div key={idx} className="card p-4 dark:bg-gray-800">
